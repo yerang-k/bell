@@ -668,9 +668,9 @@
   <div class="preset-bar">
     <span class="preset-label"><i data-lucide="calendar"></i> 시간표 프리셋:</span>
     <select id="selProfile" class="select-custom" onchange="switchProfile(this.value)">
+      <option value="고등학교 표준 (50분 수업 / 10분 휴식 / 7교시)" selected>고등학교 표준 (50분/7교시)</option>
+      <option value="중학교 표준 (45분 수업 / 10분 휴식 / 7교시)">중학교 표준 (45분/7교시)</option>
       <option value="초등학교 표준 (40분 수업 / 10분 휴식 / 6교시)">초등학교 표준 (40분/6교시)</option>
-      <option value="중학교 표준 (45분 수업 / 10분 휴식 / 7교시)" selected>중학교 표준 (45분/7교시)</option>
-      <option value="고등학교 표준 (50분 수업 / 10분 휴식 / 7교시)">고등학교 표준 (50분/7교시+예비종)</option>
       <option value="단축수업 (35분 수업 / 10분 휴식 / 6교시)">단축수업 (35분/6교시)</option>
     </select>
     <button class="btn btn-primary" onclick="openBatchModal()"><i data-lucide="sliders"></i> 시작/종료 벨소리 일괄 설정</button>
@@ -933,7 +933,16 @@
        ============================================================================== */
     let audioCtx = null;
     let currentAudioSource = null;
-    let customAudios = {};
+    let customAudios = {
+      "custom:002.수업시작.mp3": {
+        name: "002.수업시작.mp3",
+        url: "./custom_sounds/002.수업시작.mp3"
+      },
+      "custom:003.수업끝.mp3": {
+        name: "003.수업끝.mp3",
+        url: "./custom_sounds/003.수업끝.mp3"
+      }
+    };
 
     function getAudioCtx() {
       if (!audioCtx) {
@@ -1023,7 +1032,8 @@
 
       // 사용자 MP3 재생
       if (melodyKey && melodyKey.startsWith("custom:") && customAudios[melodyKey]) {
-        const audio = new Audio(customAudios[melodyKey].dataUrl);
+        const audioSrc = customAudios[melodyKey].dataUrl || customAudios[melodyKey].url;
+        const audio = new Audio(audioSrc);
         audio.volume = Math.max(0, Math.min(1, volumePct));
         audio.play().catch(e => console.log(e));
         currentAudioSource = audio;
@@ -1111,15 +1121,33 @@
       return list;
     }
 
+    const USER_HIGH_SCHOOL = [
+      { "time": "08:30", "category": "조·종례", "name": "1교시 시작", "melody": "custom:002.수업시작.mp3", "duration": 0, "enabled": true },
+      { "time": "09:20", "category": "수업 종료", "name": "1교시 종료 (쉬는 시간)", "melody": "custom:003.수업끝.mp3", "duration": 0, "enabled": true },
+      { "time": "09:30", "category": "수업 시작", "name": "2교시 시작", "melody": "custom:002.수업시작.mp3", "duration": 0, "enabled": true },
+      { "time": "10:20", "category": "수업 종료", "name": "2교시 종료 (쉬는 시간)", "melody": "custom:003.수업끝.mp3", "duration": 0, "enabled": true },
+      { "time": "10:30", "category": "수업 시작", "name": "3교시 시작", "melody": "custom:002.수업시작.mp3", "duration": 0, "enabled": true },
+      { "time": "11:20", "category": "수업 종료", "name": "3교시 종료 (쉬는 시간)", "melody": "custom:003.수업끝.mp3", "duration": 0, "enabled": true },
+      { "time": "11:30", "category": "수업 시작", "name": "4교시 시작", "melody": "custom:002.수업시작.mp3", "duration": 0, "enabled": true },
+      { "time": "12:20", "category": "점심시간", "name": "4교시 종료 (점심시간 시작)", "melody": "custom:003.수업끝.mp3", "duration": 0, "enabled": true },
+      { "time": "13:20", "category": "예비종", "name": "5교시 시작 5분전", "melody": "prep_chime", "duration": 0, "enabled": true },
+      { "time": "13:25", "category": "수업 시작", "name": "5교시 시작", "melody": "custom:002.수업시작.mp3", "duration": 0, "enabled": true },
+      { "time": "14:15", "category": "수업 종료", "name": "5교시 종료 (쉬는 시간)", "melody": "custom:003.수업끝.mp3", "duration": 0, "enabled": true },
+      { "time": "14:25", "category": "수업 시작", "name": "6교시 시작", "melody": "custom:002.수업시작.mp3", "duration": 0, "enabled": true },
+      { "time": "15:15", "category": "수업 종료", "name": "6교시 종료 (쉬는 시간)", "melody": "custom:003.수업끝.mp3", "duration": 0, "enabled": true },
+      { "time": "15:25", "category": "수업 시작", "name": "7교시 시작", "melody": "custom:002.수업시작.mp3", "duration": 0, "enabled": true },
+      { "time": "16:15", "category": "수업 종료", "name": "7교시 종료", "melody": "custom:003.수업끝.mp3", "duration": 0, "enabled": true }
+    ];
+
     const PRESETS = {
-      "초등학교 표준 (40분 수업 / 10분 휴식 / 6교시)": () => buildSchedule("09:00", 40, 10, 6, 4, 50, true, false),
+      "고등학교 표준 (50분 수업 / 10분 휴식 / 7교시)": () => JSON.parse(JSON.stringify(USER_HIGH_SCHOOL)),
       "중학교 표준 (45분 수업 / 10분 휴식 / 7교시)": () => buildSchedule("08:50", 45, 10, 7, 4, 55, true, false),
-      "고등학교 표준 (50분 수업 / 10분 휴식 / 7교시)": () => buildSchedule("08:40", 50, 10, 7, 4, 60, true, true),
+      "초등학교 표준 (40분 수업 / 10분 휴식 / 6교시)": () => buildSchedule("09:00", 40, 10, 6, 4, 50, true, false),
       "단축수업 (35분 수업 / 10분 휴식 / 6교시)": () => buildSchedule("09:00", 35, 10, 6, 4, 50, true, false),
     };
 
     let config = {
-      activeProfile: "중학교 표준 (45분 수업 / 10분 휴식 / 7교시)",
+      activeProfile: "고등학교 표준 (50분 수업 / 10분 휴식 / 7교시)",
       profiles: {}
     };
 
@@ -1133,11 +1161,14 @@
         if (!config.profiles[k]) config.profiles[k] = PRESETS[k]();
       });
       if (!config.profiles[config.activeProfile]) {
-        config.activeProfile = Object.keys(PRESETS)[1];
+        config.activeProfile = "고등학교 표준 (50분 수업 / 10분 휴식 / 7교시)";
       }
       try {
         const savedAudio = localStorage.getItem("school_bell_custom_audios");
-        if (savedAudio) customAudios = JSON.parse(savedAudio);
+        if (savedAudio) {
+          const parsed = JSON.parse(savedAudio);
+          Object.assign(customAudios, parsed);
+        }
       } catch(e) {}
     }
 
