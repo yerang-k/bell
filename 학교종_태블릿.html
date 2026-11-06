@@ -1,0 +1,1581 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>학교 수업 종소리 알리미 - 예랑샘의 작업실</title>
+  
+  <!-- Pretendard Variable Font (바이브 프로젝트 허브와 동일) -->
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+  
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    /* ==========================================================================
+       Vibe Project Hub v3.2 테마 적용 — 톤온톤 미스트 블루 & 화이트 서재 감성
+       ========================================================================== */
+    :root {
+      --font-main: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, "Noto Sans KR", sans-serif;
+
+      /* 캔버스 & 표면 (바이브 프로젝트 허브 고유 색상) */
+      --bg: #eef3f9;
+      --bg-soft: #e1ebf5;
+      --card: #ffffff;
+      --card-alt: #f8fafc;
+      --line: #d4e1ef;
+      --line-strong: #b8cce2;
+
+      /* 텍스트 (깊은 미드나잇 네이비 & 슬레이트 블루) */
+      --text: #1c2b3b;
+      --text-2: #495d73;
+      --text-3: #73889e;
+
+      /* 포인트 (차분한 코발트 블루) */
+      --accent: #2f5f9e;
+      --accent-hover: #234b80;
+      --accent-soft: #e4eef9;
+      --accent-border: #bdd3ec;
+
+      /* 상태 & 카테고리 컬러 */
+      --start-color: #2b6777;
+      --start-bg: #e5f2f5;
+      --start-border: #bedce3;
+
+      --end-color: #9e4747;
+      --end-bg: #f8ebeb;
+      --end-border: #fecaca;
+
+      --prep-color: #8c672b;
+      --prep-bg: #fdf5e6;
+      --prep-border: #fae6c3;
+
+      --lunch-color: #3f5582;
+      --lunch-bg: #e8edf7;
+      --lunch-border: #c7d3ec;
+
+      --radius: 14px;
+      --radius-lg: 20px;
+      --shadow-xs: 0 1px 2px rgba(24, 48, 79, 0.04);
+      --shadow: 0 4px 14px rgba(24, 48, 79, 0.05);
+      --shadow-hover: 0 10px 24px -4px rgba(24, 48, 79, 0.10);
+      --ease: all 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+    body {
+      font-family: var(--font-main);
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      word-break: keep-all;
+    }
+
+    /* 상단 탑바 헤더 */
+    header.topbar {
+      background: var(--card);
+      border-bottom: 1px solid var(--line);
+      padding: 10px 20px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      box-shadow: var(--shadow-xs);
+    }
+
+    .brand-section {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #2f5f9e 0%, #1e4273 100%);
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      box-shadow: 0 4px 12px rgba(47, 95, 158, 0.25);
+    }
+    .logo-icon svg { width: 22px; height: 22px; stroke-width: 2.2; }
+
+    .brand-text { display: flex; flex-direction: column; }
+    .brand-name { font-size: 1.15rem; font-weight: 800; letter-spacing: -0.02em; color: var(--text); line-height: 1.2; }
+    .brand-sub { font-size: 0.78rem; font-weight: 500; color: var(--text-3); margin-top: 2px; }
+
+    /* 시계 및 다음 타종 대시보드 */
+    .dashboard-center {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .clock-badge-card {
+      background: var(--bg-soft);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 8px 16px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .clock-date { font-size: 0.75rem; font-weight: 600; color: var(--text-3); }
+    .clock-time { font-family: "Consolas", monospace; font-size: 1.7rem; font-weight: 800; color: var(--text); line-height: 1.1; letter-spacing: -0.02em; }
+
+    .countdown-card {
+      background: var(--card);
+      border: 1px solid var(--accent-border);
+      border-radius: var(--radius);
+      padding: 8px 18px;
+      min-width: 240px;
+      box-shadow: 0 2px 8px rgba(47, 95, 158, 0.06);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .countdown-header {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--accent);
+    }
+    .countdown-header svg { width: 14px; height: 14px; }
+    .countdown-target { font-size: 0.95rem; font-weight: 800; color: var(--text); margin: 2px 0; }
+    .countdown-remain { font-size: 0.8rem; font-weight: 600; color: var(--text-2); }
+
+    /* 헤더 컨트롤 (스위치 & 수동버튼) */
+    .header-actions {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 8px;
+    }
+
+    .switch-group {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-2);
+    }
+    .switch-group label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+    }
+    .switch-group input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      accent-color: var(--accent);
+      cursor: pointer;
+    }
+    .volume-box {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--bg-soft);
+      padding: 4px 10px;
+      border-radius: 20px;
+      border: 1px solid var(--line);
+    }
+    .volume-box svg { width: 15px; height: 15px; color: var(--text-3); }
+    .volume-box input[type="range"] {
+      width: 75px;
+      accent-color: var(--accent);
+      cursor: pointer;
+    }
+    .volume-val { font-size: 0.78rem; font-weight: 700; color: var(--accent); width: 34px; }
+
+    /* 버튼 스타일 공통 */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 8px 14px;
+      border-radius: 10px;
+      border: 1px solid transparent;
+      font-family: var(--font-main);
+      font-size: 0.86rem;
+      font-weight: 700;
+      white-space: nowrap;
+      cursor: pointer;
+      transition: var(--ease);
+    }
+    .btn svg { width: 16px; height: 16px; flex-shrink: 0; stroke-width: 2; }
+    .btn:active { transform: scale(0.97); }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #ffffff;
+      box-shadow: 0 2px 6px rgba(47, 95, 158, 0.2);
+    }
+    .btn-primary:hover { background: var(--accent-hover); }
+
+    .btn-secondary {
+      background: var(--card);
+      color: var(--text);
+      border-color: var(--line-strong);
+    }
+    .btn-secondary:hover { background: var(--bg-soft); border-color: var(--accent-border); }
+
+    .btn-start {
+      background: var(--start-bg);
+      color: var(--start-color);
+      border-color: var(--start-border);
+    }
+    .btn-start:hover { background: #d7ebee; }
+
+    .btn-end {
+      background: var(--end-bg);
+      color: var(--end-color);
+      border-color: var(--end-border);
+    }
+    .btn-end:hover { background: #f4dada; }
+
+    .btn-danger {
+      background: #fdf2f2;
+      color: var(--end-color);
+      border-color: #fca5a5;
+    }
+    .btn-danger:hover { background: #fee2e2; }
+
+    /* 프리셋 툴바 */
+    .preset-bar {
+      background: var(--card);
+      padding: 8px 20px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .preset-label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--text-2);
+    }
+    .preset-label svg { width: 16px; height: 16px; color: var(--accent); }
+
+    select.select-custom, input.input-custom {
+      font-family: var(--font-main);
+      background: var(--card);
+      color: var(--text);
+      border: 1px solid var(--line-strong);
+      border-radius: 9px;
+      padding: 7px 12px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      outline: none;
+      transition: var(--ease);
+    }
+    select.select-custom:focus, input.input-custom:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(47, 95, 158, 0.12);
+    }
+
+    /* 메인 2열 레이아웃 */
+    main.app-body {
+      flex: 1;
+      display: flex;
+      flex-wrap: wrap;
+      padding: 12px 20px 20px;
+      gap: 14px;
+      align-items: flex-start;
+    }
+
+    /* 좌측 시간표 테이블 컨테이너 */
+    .table-container {
+      flex: 1 1 560px;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .table-header {
+      padding: 12px 18px;
+      background: var(--card-alt);
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .table-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.92rem;
+      font-weight: 800;
+      color: var(--text);
+    }
+    .table-title svg { width: 17px; height: 17px; color: var(--accent); }
+    .table-badge-count {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--accent);
+      background: var(--accent-soft);
+      padding: 2px 9px;
+      border-radius: 999px;
+      border: 1px solid var(--accent-border);
+    }
+
+    .table-scroll {
+      flex: 1;
+      overflow-y: auto;
+      max-height: calc(100vh - 170px);
+      min-height: 320px;
+    }
+
+    /* 스크롤바 커스텀 */
+    .table-scroll::-webkit-scrollbar,
+    .edit-card::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .table-scroll::-webkit-scrollbar-track,
+    .edit-card::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .table-scroll::-webkit-scrollbar-thumb,
+    .edit-card::-webkit-scrollbar-thumb {
+      background: var(--line-strong);
+      border-radius: 999px;
+    }
+    .table-scroll::-webkit-scrollbar-thumb:hover,
+    .edit-card::-webkit-scrollbar-thumb:hover {
+      background: var(--text-3);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.88rem;
+    }
+    th {
+      background: var(--card-alt);
+      padding: 11px 16px;
+      color: var(--text-3);
+      font-size: 0.78rem;
+      font-weight: 700;
+      border-bottom: 1px solid var(--line);
+      position: sticky;
+      top: 0;
+      z-index: 2;
+    }
+    td {
+      padding: 11px 16px;
+      border-bottom: 1px solid #edf2f7;
+      cursor: pointer;
+      transition: background 0.1s;
+    }
+    tr:hover td { background: #f4f8fc; }
+    tr.selected td { background: #eaf1fb; }
+    tr.next-up td { background: #fefce8; color: #854d0e; font-weight: 700; }
+    tr.disabled td { opacity: 0.45; text-decoration: line-through; }
+
+    /* 상태 뱃지 & 카테고리 태그 */
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 0.74rem;
+      font-weight: 700;
+    }
+    .status-pill.active {
+      background: var(--start-bg);
+      color: var(--start-color);
+      border: 1px solid var(--start-border);
+    }
+    .status-pill.disabled {
+      background: #edf2f7;
+      color: var(--text-3);
+      border: 1px solid var(--line);
+    }
+    .status-pill .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+
+    .cat-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 700;
+    }
+    .cat-tag.start { background: var(--start-bg); color: var(--start-color); border: 1px solid var(--start-border); }
+    .cat-tag.end { background: var(--end-bg); color: var(--end-color); border: 1px solid var(--end-border); }
+    .cat-tag.prep { background: var(--prep-bg); color: var(--prep-color); border: 1px solid var(--prep-border); }
+    .cat-tag.lunch { background: var(--lunch-bg); color: var(--lunch-color); border: 1px solid var(--lunch-border); }
+    .cat-tag.normal { background: var(--bg-soft); color: var(--text-2); border: 1px solid var(--line); }
+
+    .melody-cell {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .melody-cell svg { width: 14px; height: 14px; color: var(--accent); flex-shrink: 0; }
+
+    /* 우측 편집 카드 */
+    .edit-card {
+      flex: 0 0 360px;
+      max-width: 380px;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 13px 15px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-height: calc(100vh - 170px);
+      overflow-y: auto;
+    }
+
+    .card-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: var(--text);
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--line);
+    }
+    .card-title svg { width: 17px; height: 17px; color: var(--accent); }
+
+    .form-row-2 {
+      display: flex;
+      gap: 8px;
+      align-items: flex-start;
+    }
+    .form-row-2 > .form-group {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .form-group { display: flex; flex-direction: column; gap: 3px; }
+    .form-label {
+      font-size: 0.76rem;
+      font-weight: 700;
+      color: var(--text-2);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .form-label svg { width: 12px; height: 12px; color: var(--text-3); }
+
+    .time-inputs {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .time-inputs input {
+      width: 48px;
+      text-align: center;
+      font-size: 1rem;
+      font-weight: 800;
+      color: var(--text);
+      padding: 5px 2px;
+    }
+    .time-inputs span {
+      font-weight: 800;
+      color: var(--text-3);
+      font-size: 0.9rem;
+    }
+
+    /* 일괄 적용 박스 (서재 톤온톤 스타일) */
+    .batch-box {
+      background: #f4f8fc;
+      border: 1px solid var(--line-strong);
+      border-radius: 10px;
+      padding: 9px 11px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-top: 2px;
+    }
+    .batch-box-title {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 0.75rem;
+      font-weight: 800;
+      color: var(--accent);
+    }
+    .batch-box-title svg { width: 13px; height: 13px; }
+
+    /* 모달 대화상자 */
+    .modal-backdrop {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(28, 43, 59, 0.45);
+      backdrop-filter: blur(4px);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    .modal-backdrop.active { display: flex; }
+
+    .modal-window {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      width: 100%;
+      max-width: 530px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      box-shadow: 0 16px 36px rgba(24, 48, 79, 0.16);
+      animation: modalFadeIn 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    @keyframes modalFadeIn {
+      from { opacity: 0; transform: translateY(12px) scale(0.98); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .modal-header h3 { font-size: 1.15rem; font-weight: 800; color: var(--text); }
+    .modal-header svg { width: 22px; height: 22px; color: var(--accent); }
+
+    .batch-card {
+      background: #f8fafc;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .batch-card.start { border-left: 5px solid var(--start-color); }
+    .batch-card.end { border-left: 5px solid var(--end-color); }
+
+    .batch-card-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.88rem;
+      font-weight: 800;
+    }
+    .batch-card.start .batch-card-header { color: var(--start-color); }
+    .batch-card.end .batch-card-header { color: var(--end-color); }
+
+    /* 알림 토스트 */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #1e3a5f;
+      color: white;
+      padding: 12px 20px;
+      border-radius: 10px;
+      box-shadow: 0 6px 18px rgba(24, 48, 79, 0.25);
+      font-size: 0.88rem;
+      font-weight: 700;
+      z-index: 2000;
+      display: none;
+      align-items: center;
+      gap: 8px;
+      animation: toastIn 0.25s ease-out;
+    }
+    .toast svg { width: 17px; height: 17px; color: #38bdf8; }
+    @keyframes toastIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+  </style>
+</head>
+<body>
+
+  <!-- 상단 탑바 헤더 -->
+  <header class="topbar">
+    <div class="brand-section">
+      <div class="logo-icon">
+        <i data-lucide="bell"></i>
+      </div>
+      <div class="brand-text">
+        <span class="brand-name">학교 수업 종소리 알리미</span>
+        <span class="brand-sub">스마트 학교 타종 & 시간표 관리</span>
+      </div>
+    </div>
+
+    <!-- 대시보드 시계 & 다음 타종 안내 -->
+    <div class="dashboard-center">
+      <div class="clock-badge-card">
+        <div id="clockDate" class="clock-date">2026년 11월 06일 (금)</div>
+        <div id="clockTime" class="clock-time">00:00:00</div>
+      </div>
+
+      <div class="countdown-card">
+        <div class="countdown-header">
+          <i data-lucide="bell-ring"></i>
+          <span>다음 예정 타종</span>
+        </div>
+        <div id="nextBellInfo" class="countdown-target">계산 중...</div>
+        <div id="nextBellCountdown" class="countdown-remain">남은 시간: --분 --초</div>
+      </div>
+    </div>
+
+    <!-- 헤더 우측 컨트롤 -->
+    <div class="header-actions">
+      <div class="switch-group">
+        <label><input type="checkbox" id="chkMaster" checked> 자동 타종 (ON)</label>
+        <label><input type="checkbox" id="chkMuteWeekend" checked> 주말 음소거</label>
+        <div class="volume-box">
+          <i data-lucide="volume-2"></i>
+          <input type="range" id="rngVolume" min="10" max="100" value="85">
+          <span id="volText" class="volume-val">85%</span>
+        </div>
+      </div>
+      <div style="display:flex; gap:8px;">
+        <button class="btn btn-primary" onclick="ringManualNow()"><i data-lucide="bell"></i> 지금 종 울리기 (수동)</button>
+        <button class="btn btn-danger" onclick="stopAllAudio()"><i data-lucide="square"></i> 소리 멈춤</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- 프리셋 툴바 -->
+  <div class="preset-bar">
+    <span class="preset-label"><i data-lucide="calendar"></i> 시간표 프리셋:</span>
+    <select id="selProfile" class="select-custom" onchange="switchProfile(this.value)">
+      <option value="초등학교 표준 (40분 수업 / 10분 휴식 / 6교시)">초등학교 표준 (40분/6교시)</option>
+      <option value="중학교 표준 (45분 수업 / 10분 휴식 / 7교시)" selected>중학교 표준 (45분/7교시)</option>
+      <option value="고등학교 표준 (50분 수업 / 10분 휴식 / 7교시)">고등학교 표준 (50분/7교시+예비종)</option>
+      <option value="단축수업 (35분 수업 / 10분 휴식 / 6교시)">단축수업 (35분/6교시)</option>
+    </select>
+    <button class="btn btn-primary" onclick="openBatchModal()"><i data-lucide="sliders"></i> 시작/종료 벨소리 일괄 설정</button>
+    <button class="btn btn-secondary" onclick="openGenModal()"><i data-lucide="calendar-plus"></i> 맞춤 시간표 자동 생성</button>
+    <button class="btn btn-secondary" onclick="resetCurrentProfile()"><i data-lucide="rotate-ccw"></i> 기본값 초기화</button>
+    <button class="btn btn-secondary" onclick="exportJSON()"><i data-lucide="download"></i> 파일 저장</button>
+    <button class="btn btn-secondary" onclick="document.getElementById('importFile').click()"><i data-lucide="upload"></i> 불러오기</button>
+    <input type="file" id="importFile" accept=".json" style="display:none;" onchange="importJSON(event)">
+  </div>
+
+  <!-- 본문 2컬럼 레이아웃 -->
+  <main class="app-body">
+    <!-- 좌측 시간표 목록 -->
+    <div class="table-container">
+      <div class="table-header">
+        <div class="table-title">
+          <i data-lucide="list"></i>
+          <span>시간표 타종 목록</span>
+          <span style="font-size:0.75rem; color:var(--text-3); font-weight:500;">(클릭: 우측 편집 | 더블클릭: ON/OFF)</span>
+        </div>
+        <span id="itemCount" class="table-badge-count">총 0개</span>
+      </div>
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th style="width: 75px; text-align:center;">상태</th>
+              <th style="width: 85px; text-align:center;">시각</th>
+              <th style="width: 95px; text-align:center;">구분</th>
+              <th>일정 / 교시 이름</th>
+              <th>지정 벨소리 / MP3</th>
+              <th style="width: 80px; text-align:center;">재생 시간</th>
+            </tr>
+          </thead>
+          <tbody id="scheduleTbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 우측 편집 패널 -->
+    <div class="edit-card">
+      <div class="card-title">
+        <i data-lucide="edit-3"></i>
+        <span>타종 시간 추가 / 편집</span>
+      </div>
+      
+      <!-- 1행: 시각 + 구분 -->
+      <div class="form-row-2">
+        <div class="form-group">
+          <label class="form-label"><i data-lucide="clock"></i> 시각 (24시)</label>
+          <div class="time-inputs">
+            <input type="number" id="inpHour" min="0" max="23" value="09" class="input-custom">
+            <span>:</span>
+            <input type="number" id="inpMin" min="0" max="59" value="00" class="input-custom">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label"><i data-lucide="tag"></i> 구분</label>
+          <select id="inpCat" class="select-custom" onchange="onCatChange()">
+            <option value="수업 시작">수업 시작</option>
+            <option value="수업 종료">수업 종료</option>
+            <option value="예비종">예비종</option>
+            <option value="점심시간">점심시간</option>
+            <option value="조·종례">조·종례</option>
+            <option value="기타">기타</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- 2행: 일정 이름 + 재생 시간 -->
+      <div class="form-row-2">
+        <div class="form-group">
+          <label class="form-label"><i data-lucide="type"></i> 교시 / 일정 이름</label>
+          <input type="text" id="inpName" value="1교시 시작" class="input-custom">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label"><i data-lucide="timer"></i> 재생 시간</label>
+          <select id="inpDuration" class="select-custom">
+            <option value="0">전체 재생</option>
+            <option value="10">10초 컷</option>
+            <option value="15">15초 컷</option>
+            <option value="20">20초 컷</option>
+            <option value="30">30초 컷</option>
+            <option value="45">45초 컷</option>
+            <option value="60">60초 컷</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- 3행: 벨소리 선택 & 사용 ON -->
+      <div class="form-group">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <label class="form-label"><i data-lucide="music"></i> 벨소리 / MP3</label>
+          <label style="display:flex; align-items:center; gap:5px; font-size:0.76rem; font-weight:700; color:var(--text-2); cursor:pointer;">
+            <input type="checkbox" id="inpEnabled" checked style="width:14px; height:14px; accent-color:var(--accent);"> 사용 (ON)
+          </label>
+        </div>
+        <select id="inpMelody" class="select-custom"></select>
+        <div style="display:flex; gap:6px; margin-top:3px;">
+          <button class="btn btn-secondary" style="font-size:0.76rem; flex:1; padding:6px 8px;" onclick="document.getElementById('mp3Upload').click()">
+            <i data-lucide="file-plus"></i> 내 MP3 추가
+          </button>
+          <input type="file" id="mp3Upload" accept="audio/*" style="display:none;" onchange="handleMp3Upload(event)">
+          <button class="btn btn-secondary" style="font-size:0.76rem; padding:6px 10px;" onclick="previewSelectedMelody()">
+            <i data-lucide="volume-2"></i> 미리듣기
+          </button>
+          <button class="btn btn-danger" style="font-size:0.76rem; padding:6px 9px;" onclick="stopAllAudio()" title="소리 멈춤">
+            <i data-lucide="square"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- 작업 버튼 -->
+      <div style="display:flex; flex-direction:column; gap:5px; margin-top:2px;">
+        <div style="display:flex; gap:6px;">
+          <button class="btn btn-primary" style="flex:1; padding:7px 10px; font-size:0.82rem;" onclick="addScheduleItem()"><i data-lucide="plus"></i> 새 시간 추가</button>
+          <button class="btn btn-secondary" style="flex:1; padding:7px 10px; font-size:0.82rem;" onclick="updateSelectedItem()"><i data-lucide="check"></i> 수정 저장</button>
+        </div>
+        <div style="display:flex; gap:6px;">
+          <button class="btn btn-secondary" style="flex:1; padding:6px 10px; font-size:0.78rem;" onclick="toggleSelectedItem()"><i data-lucide="refresh-cw"></i> ON/OFF</button>
+          <button class="btn btn-danger" style="flex:1; padding:6px 10px; font-size:0.78rem;" onclick="deleteSelectedItem()"><i data-lucide="trash-2"></i> 삭제</button>
+        </div>
+      </div>
+
+      <!-- 일괄 적용 박스 -->
+      <div class="batch-box">
+        <div class="batch-box-title">
+          <i data-lucide="zap"></i>
+          <span>선택한 소리를 다른 교시에도 일괄 적용</span>
+        </div>
+        <div style="display:flex; gap:6px;">
+          <button class="btn btn-start" style="font-size:0.76rem; padding:6px 8px; flex:1;" onclick="applyCurrentSoundToCategory('수업 시작')">
+            <i data-lucide="play-circle"></i> 시작종 전체 적용
+          </button>
+          <button class="btn btn-end" style="font-size:0.76rem; padding:6px 8px; flex:1;" onclick="applyCurrentSoundToCategory('수업 종료')">
+            <i data-lucide="stop-circle"></i> 종료종 전체 적용
+          </button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- 시작/종료 벨소리 일괄 설정 모달 -->
+  <div id="batchModal" class="modal-backdrop">
+    <div class="modal-window">
+      <div class="modal-header">
+        <i data-lucide="sliders"></i>
+        <h3>수업 시작 / 종료 벨소리 일괄 설정</h3>
+      </div>
+      <p style="font-size:0.82rem; color:var(--text-2); line-height:1.5;">
+        시간마다 하나씩 지정할 필요 없이, 하루 전체 시간표의 수업 시작종과 종료종을 한 번에 원하는 벨소리(또는 MP3)로 변경합니다.
+      </p>
+
+      <!-- 시작 벨소리 카드 -->
+      <div class="batch-card start">
+        <div class="batch-card-header">
+          <label style="display:flex; align-items:center; gap:6px; cursor:pointer;">
+            <input type="checkbox" id="mStartApply" checked style="width:16px; height:16px; accent-color:var(--start-color);">
+            <i data-lucide="play-circle"></i> 수업 시작 벨소리 전체 적용
+          </label>
+        </div>
+        <div style="display:flex; gap:8px;">
+          <select id="mStartMelody" class="select-custom" style="flex:1;"></select>
+          <select id="mStartDur" class="select-custom" style="width:115px;">
+            <option value="0">전체 재생</option>
+            <option value="15">15초</option>
+            <option value="20">20초</option>
+            <option value="30">30초</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- 종료 벨소리 카드 -->
+      <div class="batch-card end">
+        <div class="batch-card-header">
+          <label style="display:flex; align-items:center; gap:6px; cursor:pointer;">
+            <input type="checkbox" id="mEndApply" checked style="width:16px; height:16px; accent-color:var(--end-color);">
+            <i data-lucide="stop-circle"></i> 수업 종료 벨소리 전체 적용
+          </label>
+        </div>
+        <div style="display:flex; gap:8px;">
+          <select id="mEndMelody" class="select-custom" style="flex:1;"></select>
+          <select id="mEndDur" class="select-custom" style="width:115px;">
+            <option value="0">전체 재생</option>
+            <option value="15">15초</option>
+            <option value="20">20초</option>
+            <option value="30">30초</option>
+          </select>
+        </div>
+      </div>
+
+      <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:8px;">
+        <button class="btn btn-secondary" onclick="closeBatchModal()">취소</button>
+        <button class="btn btn-primary" onclick="doBatchApply()"><i data-lucide="sparkles"></i> 선택한 벨소리 일괄 적용</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 맞춤 시간표 자동 생성 모달 -->
+  <div id="genModal" class="modal-backdrop">
+    <div class="modal-window">
+      <div class="modal-header">
+        <i data-lucide="calendar-plus"></i>
+        <h3>맞춤 시간표 자동 생성기</h3>
+      </div>
+      <p style="font-size:0.82rem; color:var(--text-2);">
+        1교시 시작 시각과 수업/휴식 시간을 입력하면 하루 전체 타종표를 자동으로 생성합니다.
+      </p>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+        <div class="form-group">
+          <label class="form-label">1교시 시작 시각</label>
+          <input type="text" id="gStart" value="09:00" class="input-custom" style="text-align:center;">
+        </div>
+        <div class="form-group">
+          <label class="form-label">수업 시간 (분)</label>
+          <input type="number" id="gClassMin" value="45" class="input-custom" style="text-align:center;">
+        </div>
+        <div class="form-group">
+          <label class="form-label">쉬는 시간 (분)</label>
+          <input type="number" id="gBreakMin" value="10" class="input-custom" style="text-align:center;">
+        </div>
+        <div class="form-group">
+          <label class="form-label">총 교시 수</label>
+          <input type="number" id="gPeriods" value="7" class="input-custom" style="text-align:center;">
+        </div>
+        <div class="form-group">
+          <label class="form-label">점심시간 위치 (교시 후)</label>
+          <input type="number" id="gLunchAfter" value="4" class="input-custom" style="text-align:center;">
+        </div>
+        <div class="form-group">
+          <label class="form-label">점심시간 길이 (분)</label>
+          <input type="number" id="gLunchMin" value="55" class="input-custom" style="text-align:center;">
+        </div>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:6px; font-size:0.82rem; font-weight:600; color:var(--text-2); margin-top:4px;">
+        <label><input type="checkbox" id="gHr" checked> 아침 조례(10분 전) 및 종례(10분 후) 타종 포함</label>
+        <label><input type="checkbox" id="gPrep"> 매 교시 시작 2분 전 예비종 포함</label>
+      </div>
+
+      <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:8px;">
+        <button class="btn btn-secondary" onclick="closeGenModal()">취소</button>
+        <button class="btn btn-primary" onclick="doGenerateSchedule()"><i data-lucide="check"></i> 현재 시간표에 생성 및 적용</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 알림 토스트 -->
+  <div id="toast" class="toast">
+    <i data-lucide="bell"></i>
+    <span id="toastMsg">알림 메시지</span>
+  </div>
+
+  <script>
+    /* ==============================================================================
+       1. 내장 학교 차임벨 합성 엔진 (Web Audio API)
+       ============================================================================== */
+    let audioCtx = null;
+    let currentAudioSource = null;
+    let customAudios = {};
+
+    function getAudioCtx() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+      return audioCtx;
+    }
+
+    const NOTE_FREQS = {
+      "G3": 196.00, "A3": 220.00, "B3": 246.94,
+      "C4": 261.63, "D4": 293.66, "E4": 329.63, "F4": 349.23, "F#4": 369.99, "G4": 392.00, "A4": 440.00, "B4": 493.88,
+      "C5": 523.25, "D5": 587.33, "E5": 659.25, "F5": 698.46, "G5": 783.99, "A5": 880.00, "C6": 1046.50
+    };
+
+    const BUILTIN_MELODIES = {
+      "westminster": {
+        name: "웨스트민스터 차임벨 (기본 학교종)",
+        events: [
+          [0.00, ["E4","E5"], 0.75], [0.75, ["C4","C5"], 0.75], [1.50, ["D4","D5"], 0.75], [2.25, ["G3","G4"], 1.50],
+          [4.00, ["G3","G4"], 0.75], [4.75, ["D4","D5"], 0.75], [5.50, ["E4","E5"], 0.75], [6.25, ["C4","G4","C5","E5"], 2.40]
+        ]
+      },
+      "class_start": {
+        name: "수업 시작 차임 (밝은 상행 화음)",
+        events: [
+          [0.00, ["C4","C5"], 0.45], [0.45, ["E4","E5"], 0.45], [0.90, ["G4","G5"], 0.45], [1.35, ["C5","E5","G5","C6"], 1.60],
+          [3.15, ["G4","B4","D5"], 0.55], [3.70, ["C4","E4","G4","C5"], 2.20]
+        ]
+      },
+      "class_end": {
+        name: "수업 종료 / 쉬는 시간 차임 (부드러운 종)",
+        events: [
+          [0.00, ["E5","G5"], 0.50], [0.50, ["D5","F5"], 0.50], [1.00, ["C5","E5"], 0.50], [1.50, ["G4","B4"], 0.85],
+          [2.50, ["A4","C5"], 0.55], [3.05, ["G4","B4"], 0.55], [3.60, ["C4","E4","G4","C5"], 2.30]
+        ]
+      },
+      "prep_chime": {
+        name: "예비종 (짧은 딩동댕동 4음)",
+        events: [
+          [0.00, ["C5"], 0.45], [0.45, ["E5"], 0.45], [0.90, ["G5"], 0.45], [1.35, ["C5","E5","G5","C6"], 1.80]
+        ]
+      },
+      "lunch_bell": {
+        name: "점심시간 멜로디 (즐거운 차임)",
+        events: [
+          [0.00, ["G4"], 0.35], [0.35, ["C5"], 0.35], [0.70, ["E5"], 0.35], [1.05, ["G5"], 0.70],
+          [1.75, ["E5"], 0.35], [2.10, ["G5"], 0.95], [3.20, ["F5"], 0.40], [3.60, ["D5"], 0.40],
+          [4.00, ["B4"], 0.40], [4.40, ["G4"], 0.70], [5.10, ["C4","E4","G4","C5"], 2.30]
+        ]
+      },
+      "school_song": {
+        name: "학교종이 땡땡땡 (오르골 차임)",
+        events: [
+          [0.00, ["G4","C4"], 0.45], [0.45, ["G4"], 0.45], [0.90, ["A4","F4"], 0.45], [1.35, ["A4"], 0.45],
+          [1.80, ["G4","C4"], 0.45], [2.25, ["G4"], 0.45], [2.70, ["E4","C4"], 0.90],
+          [3.75, ["G4","C4"], 0.45], [4.20, ["G4"], 0.45], [4.65, ["E4"], 0.45], [5.10, ["E4"], 0.45], [5.55, ["D4","G3","B3"], 1.80]
+        ]
+      }
+    };
+
+    let playbackTimer = null;
+
+    function stopAllAudio() {
+      if (playbackTimer) {
+        clearTimeout(playbackTimer);
+        playbackTimer = null;
+      }
+      if (currentAudioSource) {
+        try {
+          if (currentAudioSource.stop) currentAudioSource.stop();
+          if (currentAudioSource.pause) currentAudioSource.pause();
+        } catch(e) {}
+        currentAudioSource = null;
+      }
+    }
+
+    function playBellSound(melodyKey, durationSec = 0) {
+      stopAllAudio();
+      const ctx = getAudioCtx();
+      const volumePct = parseInt(document.getElementById('rngVolume').value) / 100;
+
+      // 사용자 MP3 재생
+      if (melodyKey && melodyKey.startsWith("custom:") && customAudios[melodyKey]) {
+        const audio = new Audio(customAudios[melodyKey].dataUrl);
+        audio.volume = Math.max(0, Math.min(1, volumePct));
+        audio.play().catch(e => console.log(e));
+        currentAudioSource = audio;
+
+        if (durationSec > 0) {
+          playbackTimer = setTimeout(() => { stopAllAudio(); }, durationSec * 1000);
+        }
+        return;
+      }
+
+      // 내장 차임벨 합성
+      const mel = BUILTIN_MELODIES[melodyKey] || BUILTIN_MELODIES["westminster"];
+      const masterGain = ctx.createGain();
+      masterGain.gain.value = volumePct * 0.75;
+      masterGain.connect(ctx.destination);
+
+      const harmonics = [
+        [1.0, 1.00, 1.0], [2.0, 0.55, 1.5], [3.0, 0.30, 2.2], [4.0, 0.15, 3.0], [2.76, 0.12, 2.8]
+      ];
+
+      const now = ctx.currentTime;
+      mel.events.forEach(([startSec, notes, durSec]) => {
+        const tStart = now + startSec;
+        notes.forEach(noteName => {
+          const freq = NOTE_FREQS[noteName] || 440;
+          harmonics.forEach(([hMult, hAmp, hDecay]) => {
+            const osc = ctx.createOscillator();
+            const g = ctx.createGain();
+            osc.type = "sine";
+            osc.frequency.value = freq * hMult;
+
+            const baseDecay = (1.65 * hDecay) / Math.max(0.6, durSec * 0.75);
+            g.gain.setValueAtTime(0.0001, tStart);
+            g.gain.exponentialRampToValueAtTime(hAmp * 0.45, tStart + 0.015);
+            g.gain.exponentialRampToValueAtTime(0.0001, tStart + durSec + 1.2);
+
+            osc.connect(g);
+            g.connect(masterGain);
+            osc.start(tStart);
+            osc.stop(tStart + durSec + 1.3);
+          });
+        });
+      });
+
+      if (durationSec > 0) {
+        playbackTimer = setTimeout(() => { stopAllAudio(); }, durationSec * 1000);
+      }
+    }
+
+    /* ==============================================================================
+       2. 시간표 데이터 및 프리셋
+       ============================================================================== */
+    function buildSchedule(startHm, classMin, breakMin, periods, lunchAfter, lunchMin, hr, prep) {
+      let [sh, sm] = startHm.split(":").map(Number);
+      let cur = new Date(2026, 0, 1, sh, sm);
+      let list = [];
+      const fmt = d => String(d.getHours()).padStart(2, "0") + ":" + String(d.getMinutes()).padStart(2, "0");
+
+      if (hr) {
+        let hrt = new Date(cur.getTime() - 10 * 60000);
+        list.push({ time: fmt(hrt), name: "아침 조례 / 등교 타종", category: "조·종례", melody: "school_song", duration: 0, enabled: true });
+      }
+
+      for (let p = 1; p <= periods; p++) {
+        if (prep) {
+          let prept = new Date(cur.getTime() - 2 * 60000);
+          list.push({ time: fmt(prept), name: `${p}교시 예비종 (2분 전)`, category: "예비종", melody: "prep_chime", duration: 0, enabled: true });
+        }
+        list.push({ time: fmt(cur), name: `${p}교시 시작`, category: "수업 시작", melody: "westminster", duration: 0, enabled: true });
+
+        cur = new Date(cur.getTime() + classMin * 60000);
+        if (p === lunchAfter) {
+          list.push({ time: fmt(cur), name: `${p}교시 종료 (점심시간 시작)`, category: "점심시간", melody: "lunch_bell", duration: 0, enabled: true });
+          cur = new Date(cur.getTime() + lunchMin * 60000);
+        } else {
+          list.push({ time: fmt(cur), name: `${p}교시 종료` + (p < periods ? " (쉬는 시간)" : ""), category: "수업 종료", melody: "class_end", duration: 0, enabled: true });
+          if (p < periods) cur = new Date(cur.getTime() + breakMin * 60000);
+        }
+      }
+
+      if (hr) {
+        let hrend = new Date(cur.getTime() + 10 * 60000);
+        list.push({ time: fmt(hrend), name: "종례 및 하교 타종", category: "조·종례", melody: "school_song", duration: 0, enabled: true });
+      }
+      return list;
+    }
+
+    const PRESETS = {
+      "초등학교 표준 (40분 수업 / 10분 휴식 / 6교시)": () => buildSchedule("09:00", 40, 10, 6, 4, 50, true, false),
+      "중학교 표준 (45분 수업 / 10분 휴식 / 7교시)": () => buildSchedule("08:50", 45, 10, 7, 4, 55, true, false),
+      "고등학교 표준 (50분 수업 / 10분 휴식 / 7교시)": () => buildSchedule("08:40", 50, 10, 7, 4, 60, true, true),
+      "단축수업 (35분 수업 / 10분 휴식 / 6교시)": () => buildSchedule("09:00", 35, 10, 6, 4, 50, true, false),
+    };
+
+    let config = {
+      activeProfile: "중학교 표준 (45분 수업 / 10분 휴식 / 7교시)",
+      profiles: {}
+    };
+
+    function loadConfig() {
+      try {
+        const saved = localStorage.getItem("school_bell_web_cfg");
+        if (saved) config = JSON.parse(saved);
+      } catch(e) {}
+      if (!config.profiles) config.profiles = {};
+      Object.keys(PRESETS).forEach(k => {
+        if (!config.profiles[k]) config.profiles[k] = PRESETS[k]();
+      });
+      if (!config.profiles[config.activeProfile]) {
+        config.activeProfile = Object.keys(PRESETS)[1];
+      }
+      try {
+        const savedAudio = localStorage.getItem("school_bell_custom_audios");
+        if (savedAudio) customAudios = JSON.parse(savedAudio);
+      } catch(e) {}
+    }
+
+    function saveConfig() {
+      try {
+        localStorage.setItem("school_bell_web_cfg", JSON.stringify(config));
+        localStorage.setItem("school_bell_custom_audios", JSON.stringify(customAudios));
+      } catch(e) {}
+    }
+
+    function currentSchedule() {
+      return config.profiles[config.activeProfile] || [];
+    }
+
+    /* ==============================================================================
+       3. UI 렌더링
+       ============================================================================== */
+    let selectedIndex = -1;
+    let lastRingMinute = "";
+
+    function getMelodyDisplayName(key) {
+      if (key && key.startsWith("custom:") && customAudios[key]) {
+        return `[MP3] ${customAudios[key].name}`;
+      }
+      return BUILTIN_MELODIES[key]?.name || BUILTIN_MELODIES["westminster"].name;
+    }
+
+    function refreshMelodySelects() {
+      const sels = [document.getElementById('inpMelody'), document.getElementById('mStartMelody'), document.getElementById('mEndMelody')];
+      sels.forEach(sel => {
+        if (!sel) return;
+        const cur = sel.value;
+        sel.innerHTML = "";
+        Object.keys(BUILTIN_MELODIES).forEach(k => {
+          const opt = document.createElement("option");
+          opt.value = k;
+          opt.textContent = BUILTIN_MELODIES[k].name;
+          sel.appendChild(opt);
+        });
+        Object.keys(customAudios).forEach(k => {
+          const opt = document.createElement("option");
+          opt.value = k;
+          opt.textContent = `[MP3] ${customAudios[k].name}`;
+          sel.appendChild(opt);
+        });
+        if (cur) sel.value = cur;
+      });
+    }
+
+    function getCatClass(cat) {
+      if (cat === "수업 시작") return "start";
+      if (cat === "수업 종료") return "end";
+      if (cat === "예비종") return "prep";
+      if (cat === "점심시간") return "lunch";
+      return "normal";
+    }
+
+    function renderTable() {
+      const list = currentSchedule();
+      list.sort((a,b) => a.time.localeCompare(b.time));
+      const tbody = document.getElementById('scheduleTbody');
+      tbody.innerHTML = "";
+
+      const now = new Date();
+      const nowHm = String(now.getHours()).padStart(2, "0") + ":" + String(now.getMinutes()).padStart(2, "0");
+      let nextFound = false;
+
+      let enabledCount = 0;
+      list.forEach((it, idx) => {
+        if (it.enabled) enabledCount++;
+        const tr = document.createElement("tr");
+        if (idx === selectedIndex) tr.classList.add("selected");
+        if (!it.enabled) tr.classList.add("disabled");
+        if (it.enabled && !nextFound && it.time > nowHm) {
+          tr.classList.add("next-up");
+          nextFound = true;
+        }
+
+        const durText = it.duration > 0 ? `${it.duration}초` : "전체";
+        const catClass = getCatClass(it.category);
+        const isCustom = it.melody && it.melody.startsWith("custom:");
+        const melodyIcon = isCustom ? "music-2" : "bell";
+
+        tr.innerHTML = `
+          <td style="text-align:center;">
+            <span class="status-pill ${it.enabled ? "active" : "disabled"}">
+              <span class="dot"></span>${it.enabled ? "켜짐" : "꺼짐"}
+            </span>
+          </td>
+          <td style="text-align:center; font-weight:800; font-family:'Consolas', monospace; font-size:0.95rem;">${it.time}</td>
+          <td style="text-align:center;">
+            <span class="cat-tag ${catClass}">${it.category}</span>
+          </td>
+          <td style="font-weight:700;">${it.name}</td>
+          <td>
+            <div class="melody-cell">
+              <i data-lucide="${melodyIcon}"></i>
+              <span>${getMelodyDisplayName(it.melody)}</span>
+            </div>
+          </td>
+          <td style="text-align:center; color:var(--text-3); font-weight:600;">${durText}</td>
+        `;
+
+        tr.onclick = () => selectItem(idx);
+        tr.ondblclick = () => toggleItem(idx);
+        tbody.appendChild(tr);
+      });
+
+      document.getElementById('itemCount').textContent = `총 ${list.length}개 (활성 ${enabledCount}개)`;
+      
+      // Lucide 아이콘 리렌더링
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function selectItem(idx) {
+      selectedIndex = idx;
+      const it = currentSchedule()[idx];
+      if (!it) return;
+      const [h, m] = it.time.split(":");
+      document.getElementById('inpHour').value = h;
+      document.getElementById('inpMin').value = m;
+      document.getElementById('inpCat').value = it.category;
+      document.getElementById('inpName').value = it.name;
+      document.getElementById('inpMelody').value = it.melody;
+      document.getElementById('inpDuration').value = it.duration || 0;
+      document.getElementById('inpEnabled').checked = it.enabled;
+      renderTable();
+    }
+
+    function toggleItem(idx) {
+      const it = currentSchedule()[idx];
+      if (!it) return;
+      it.enabled = !it.enabled;
+      saveConfig();
+      renderTable();
+      showToast(`'${it.name}' → ${it.enabled ? "켜짐(ON)" : "꺼짐(OFF)"}`);
+    }
+
+    function toggleSelectedItem() {
+      if (selectedIndex >= 0) toggleItem(selectedIndex);
+    }
+
+    function addScheduleItem() {
+      const h = String(document.getElementById('inpHour').value).padStart(2, "0");
+      const m = String(document.getElementById('inpMin').value).padStart(2, "0");
+      const newItem = {
+        time: `${h}:${m}`,
+        category: document.getElementById('inpCat').value,
+        name: document.getElementById('inpName').value.trim() || "수업",
+        melody: document.getElementById('inpMelody').value,
+        duration: parseInt(document.getElementById('inpDuration').value) || 0,
+        enabled: document.getElementById('inpEnabled').checked
+      };
+      currentSchedule().push(newItem);
+      saveConfig();
+      renderTable();
+      showToast(`타종 시간 추가됨: ${newItem.time} (${newItem.name})`);
+    }
+
+    function updateSelectedItem() {
+      if (selectedIndex < 0) { alert("수정할 항목을 표에서 먼저 선택하세요."); return; }
+      const h = String(document.getElementById('inpHour').value).padStart(2, "0");
+      const m = String(document.getElementById('inpMin').value).padStart(2, "0");
+      const it = currentSchedule()[selectedIndex];
+      it.time = `${h}:${m}`;
+      it.category = document.getElementById('inpCat').value;
+      it.name = document.getElementById('inpName').value.trim() || "수업";
+      it.melody = document.getElementById('inpMelody').value;
+      it.duration = parseInt(document.getElementById('inpDuration').value) || 0;
+      it.enabled = document.getElementById('inpEnabled').checked;
+      saveConfig();
+      renderTable();
+      showToast(`수정 완료: ${it.time} (${it.name})`);
+    }
+
+    function deleteSelectedItem() {
+      if (selectedIndex < 0) { alert("삭제할 항목을 표에서 먼저 선택하세요."); return; }
+      const it = currentSchedule().splice(selectedIndex, 1)[0];
+      selectedIndex = -1;
+      saveConfig();
+      renderTable();
+      showToast(`삭제됨: ${it.time} (${it.name})`);
+    }
+
+    function applyCurrentSoundToCategory(targetCat) {
+      const key = document.getElementById('inpMelody').value;
+      const dur = parseInt(document.getElementById('inpDuration').value) || 0;
+      const name = getMelodyDisplayName(key);
+      const list = currentSchedule().filter(it => it.category === targetCat);
+      if (list.length === 0) {
+        alert(`현재 시간표에 '${targetCat}' 항목이 없습니다.`);
+        return;
+      }
+      if (!confirm(`모든 '${targetCat}' (${list.length}개 교시)의 벨소리를\n▶ [${name} (${dur > 0 ? dur + "초" : "전체"})]\n(으)로 일괄 변경하시겠습니까?`)) {
+        return;
+      }
+      list.forEach(it => {
+        it.melody = key;
+        it.duration = dur;
+      });
+      saveConfig();
+      renderTable();
+      showToast(`모든 '${targetCat}'(${list.length}개) 벨소리 일괄 변경 완료`);
+    }
+
+    /* ==============================================================================
+       4. 일괄 설정 & 맞춤 생성 모달
+       ============================================================================== */
+    function openBatchModal() {
+      refreshMelodySelects();
+      document.getElementById('mStartMelody').value = "westminster";
+      document.getElementById('mEndMelody').value = "class_end";
+      document.getElementById('batchModal').classList.add("active");
+      if (window.lucide) lucide.createIcons();
+    }
+    function closeBatchModal() {
+      stopAllAudio();
+      document.getElementById('batchModal').classList.remove("active");
+    }
+    function doBatchApply() {
+      const applyS = document.getElementById('mStartApply').checked;
+      const applyE = document.getElementById('mEndApply').checked;
+      const sKey = document.getElementById('mStartMelody').value;
+      const sDur = parseInt(document.getElementById('mStartDur').value) || 0;
+      const eKey = document.getElementById('mEndMelody').value;
+      const eDur = parseInt(document.getElementById('mEndDur').value) || 0;
+
+      let sCount = 0, eCount = 0;
+      currentSchedule().forEach(it => {
+        if (applyS && it.category === "수업 시작") {
+          it.melody = sKey; it.duration = sDur; sCount++;
+        }
+        if (applyE && it.category === "수업 종료") {
+          it.melody = eKey; it.duration = eDur; eCount++;
+        }
+      });
+      saveConfig();
+      renderTable();
+      closeBatchModal();
+      showToast(`일괄 설정 완료 (시작 ${sCount}개, 종료 ${eCount}개)`);
+    }
+
+    function openGenModal() {
+      document.getElementById('genModal').classList.add("active");
+      if (window.lucide) lucide.createIcons();
+    }
+    function closeGenModal() {
+      document.getElementById('genModal').classList.remove("active");
+    }
+    function doGenerateSchedule() {
+      const startHm = document.getElementById('gStart').value.trim();
+      const cMin = parseInt(document.getElementById('gClassMin').value);
+      const bMin = parseInt(document.getElementById('gBreakMin').value);
+      const periods = parseInt(document.getElementById('gPeriods').value);
+      const lAfter = parseInt(document.getElementById('gLunchAfter').value);
+      const lMin = parseInt(document.getElementById('gLunchMin').value);
+      const hr = document.getElementById('gHr').checked;
+      const prep = document.getElementById('gPrep').checked;
+
+      const gen = buildSchedule(startHm, cMin, bMin, periods, lAfter, lMin, hr, prep);
+      config.profiles[config.activeProfile] = gen;
+      saveConfig();
+      renderTable();
+      closeGenModal();
+      showToast(`맞춤 시간표 생성 완료 (${cMin}분 수업 / ${periods}교시)`);
+    }
+
+    /* ==============================================================================
+       5. MP3 업로드 및 미리듣기
+       ============================================================================== */
+    function handleMp3Upload(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = ev => {
+        const id = `custom:${Date.now()}`;
+        customAudios[id] = { name: file.name, dataUrl: ev.target.result };
+        saveConfig();
+        refreshMelodySelects();
+        document.getElementById('inpMelody').value = id;
+        showToast(`새 MP3 등록 완료: ${file.name}`);
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function previewSelectedMelody() {
+      const key = document.getElementById('inpMelody').value;
+      const dur = parseInt(document.getElementById('inpDuration').value) || 0;
+      playBellSound(key, dur);
+      showToast(`미리듣기 재생 중: ${getMelodyDisplayName(key)}`);
+    }
+
+    function ringManualNow() {
+      const key = document.getElementById('inpMelody').value;
+      const dur = parseInt(document.getElementById('inpDuration').value) || 0;
+      playBellSound(key, dur);
+      showToast(`수동 타종 실행: ${getMelodyDisplayName(key)}`);
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      document.getElementById('toastMsg').textContent = msg;
+      t.style.display = "flex";
+      setTimeout(() => { t.style.display = "none"; }, 3500);
+      if (window.lucide) lucide.createIcons();
+    }
+
+    /* ==============================================================================
+       6. 실시간 시계 & 카운트다운 타이머 루프
+       ============================================================================== */
+    function tick() {
+      const now = new Date();
+      const weekdays = ["일", "월", "화", "수", "목", "금", "토"];
+      document.getElementById('clockDate').textContent = `${now.getFullYear()}년 ${now.getMonth()+1}월 ${now.getDate()}일 (${weekdays[now.getDay()]}요일)`;
+      const nowHm = String(now.getHours()).padStart(2, "0") + ":" + String(now.getMinutes()).padStart(2, "0");
+      const nowHms = nowHm + ":" + String(now.getSeconds()).padStart(2, "0");
+      document.getElementById('clockTime').textContent = nowHms;
+
+      const masterOn = document.getElementById('chkMaster').checked;
+      const muteWeekend = document.getElementById('chkMuteWeekend').checked;
+      const isWeekend = now.getDay() === 0 || now.getDay() === 6;
+
+      if (masterOn && !(muteWeekend && isWeekend) && now.getSeconds() <= 1 && lastRingMinute !== nowHm) {
+        currentSchedule().forEach(it => {
+          if (it.enabled && it.time === nowHm) {
+            lastRingMinute = nowHm;
+            playBellSound(it.melody, it.duration || 0);
+            showToast(`[자동 타종] ${it.time} - ${it.name}`);
+            renderTable();
+          }
+        });
+      }
+
+      updateCountdown(now, nowHm, masterOn, muteWeekend && isWeekend);
+    }
+
+    function updateCountdown(now, nowHm, masterOn, isWeekendMuted) {
+      const infoEl = document.getElementById('nextBellInfo');
+      const remainEl = document.getElementById('nextBellCountdown');
+
+      if (!masterOn) {
+        infoEl.textContent = "자동 타종 꺼짐 (일시중지)";
+        remainEl.textContent = "우측 상단에서 타종을 켜주세요";
+        return;
+      }
+      if (isWeekendMuted) {
+        infoEl.textContent = "주말 음소거 적용 중";
+        remainEl.textContent = "월요일에 자동 타종이 재개됩니다";
+        return;
+      }
+
+      const list = currentSchedule();
+      let upcoming = list.find(it => it.enabled && it.time > nowHm);
+      let isTomorrow = false;
+      if (!upcoming) {
+        upcoming = list.find(it => it.enabled);
+        isTomorrow = true;
+      }
+
+      if (!upcoming) {
+        infoEl.textContent = "예정된 타종 없음";
+        remainEl.textContent = "시간표를 확인해주세요";
+        return;
+      }
+
+      const [th, tm] = upcoming.time.split(":").map(Number);
+      let target = new Date(now.getFullYear(), now.getMonth(), now.getDate(), th, tm, 0);
+      if (isTomorrow || target <= now) {
+        target = new Date(target.getTime() + 24 * 3600000);
+      }
+
+      const diffSec = Math.max(0, Math.floor((target - now) / 1000));
+      const remH = Math.floor(diffSec / 3600);
+      const remM = Math.floor((diffSec % 3600) / 60);
+      const remS = diffSec % 60;
+
+      infoEl.textContent = (isTomorrow ? "(내일) " : "") + `${upcoming.time}  ${upcoming.name}`;
+      remainEl.textContent = remH > 0 
+        ? `남은 시간: ${remH}시간 ${String(remM).padStart(2,"0")}분 ${String(remS).padStart(2,"0")}초`
+        : `남은 시간: ${remM}분 ${String(remS).padStart(2,"0")}초`;
+    }
+
+    function switchProfile(val) {
+      config.activeProfile = val;
+      saveConfig();
+      renderTable();
+      showToast(`프리셋 전환: ${val}`);
+    }
+
+    function resetCurrentProfile() {
+      if (!confirm(`'${config.activeProfile}' 시간표를 처음 기본값으로 되돌리시겠습니까?`)) return;
+      if (PRESETS[config.activeProfile]) {
+        config.profiles[config.activeProfile] = PRESETS[config.activeProfile]();
+        saveConfig();
+        renderTable();
+        showToast("기본값 초기화 완료");
+      }
+    }
+
+    function exportJSON() {
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(currentSchedule(), null, 2));
+      const a = document.createElement("a");
+      a.setAttribute("href", dataStr);
+      a.setAttribute("download", "학교_시간표.json");
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    }
+
+    function importJSON(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = ev => {
+        try {
+          const data = JSON.parse(ev.target.result);
+          if (Array.isArray(data)) {
+            config.profiles[config.activeProfile] = data;
+            saveConfig();
+            renderTable();
+            showToast("시간표 불러오기 완료");
+          }
+        } catch(err) { alert("올바른 JSON 파일이 아닙니다."); }
+      };
+      reader.readAsText(file);
+    }
+
+    document.getElementById('rngVolume').oninput = e => {
+      document.getElementById('volText').textContent = e.target.value + "%";
+    };
+
+    // 초기화
+    loadConfig();
+    refreshMelodySelects();
+    renderTable();
+    setInterval(tick, 500);
+    tick();
+
+    if (window.lucide) {
+      lucide.createIcons();
+    }
+  </script>
+</body>
+</html>
