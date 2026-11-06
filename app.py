@@ -2048,11 +2048,10 @@ class SchoolBellApp:
         today_key = now.strftime("%Y-%m-%d %H:%M")
         is_weekend = now.weekday() >= 5
 
-        # 1) 정각(00~02초 사이) 타종 조건 체크
+        # 1) 타종 조건 체크 (해당 시:분에 도달 시 1회 타종)
         if (
             self.var_master.get()
             and not (self.var_mute_weekend.get() and is_weekend)
-            and now.second <= 2
             and self.last_triggered_key != today_key
         ):
             for item in self.current_schedule:

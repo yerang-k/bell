@@ -1013,9 +1013,12 @@
       }
     }
 
-    function playBellSound(melodyKey, durationSec = 0) {
+    async function playBellSound(melodyKey, durationSec = 0) {
       stopAllAudio();
       const ctx = getAudioCtx();
+      if (ctx.state === 'suspended') {
+        try { await ctx.resume(); } catch(e) {}
+      }
       const volumePct = parseInt(document.getElementById('rngVolume').value) / 100;
 
       // 사용자 MP3 재생
@@ -1445,6 +1448,8 @@
     /* ==============================================================================
        6. 실시간 시계 & 카운트다운 타이머 루프
        ============================================================================== */
+    let lastRingMinute = "";
+
     function tick() {
       const now = new Date();
       const weekdays = ["일", "월", "화", "수", "목", "금", "토"];
@@ -1457,15 +1462,18 @@
       const muteWeekend = document.getElementById('chkMuteWeekend').checked;
       const isWeekend = now.getDay() === 0 || now.getDay() === 6;
 
-      if (masterOn && !(muteWeekend && isWeekend) && now.getSeconds() <= 1 && lastRingMinute !== nowHm) {
-        currentSchedule().forEach(it => {
-          if (it.enabled && it.time === nowHm) {
+      if (masterOn && !(muteWeekend && isWeekend)) {
+        if (lastRingMinute !== nowHm) {
+          const matched = currentSchedule().filter(it => it.enabled && it.time === nowHm);
+          if (matched.length > 0) {
             lastRingMinute = nowHm;
-            playBellSound(it.melody, it.duration || 0);
-            showToast(`[자동 타종] ${it.time} - ${it.name}`);
+            matched.forEach(it => {
+              playBellSound(it.melody, it.duration || 0);
+              showToast(`🔔 [자동 타종] ${it.time} - ${it.name}`);
+            });
             renderTable();
           }
-        });
+        }
       }
 
       updateCountdown(now, nowHm, masterOn, muteWeekend && isWeekend);
@@ -1566,12 +1574,54 @@
       document.getElementById('volText').textContent = e.target.value + "%";
     };
 
+    // 화면 꺼짐 방지 (Wake Lock API)
+    let wakeLock = null;
+    async function requestWakeLock() {
+      try {
+        if ('wakeLock' in navigator) {
+          wakeLock = await navigator.wakeLock.request('screen');
+        }
+      } catch(e) {}
+    }
+
+    // 사용자 제스처 시 오디오 언락 & 화면 꺼짐 방지
+    function unlockAudioAndWakeLock() {
+      const ctx = getAudioCtx();
+      if (ctx && ctx.state === 'suspended') {
+        ctx.resume();
+      }
+      requestWakeLock();
+    }
+    ['click', 'touchstart', 'touchend', 'pointerdown', 'keydown'].forEach(ev => {
+      window.addEventListener(ev, unlockAudioAndWakeLock, { passive: true });
+    });
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') {
+        requestWakeLock();
+      }
+    });
+
     // 초기화
     loadConfig();
     refreshMelodySelects();
     renderTable();
+    
+    // 현재 시각으로 초기화 (최초 로딩 시점 과거 타종 중복 방지)
+    const initNow = new Date();
+    lastRingMinute = String(initNow.getHours()).padStart(2, "0") + ":" + String(initNow.getMinutes()).padStart(2, "0");
+
+    // 0.5초 간격 타이머 루프
     setInterval(tick, 500);
     tick();
+
+    // 백그라운드 탭 타이머 스로틀링 방지용 Web Worker
+    try {
+      const workerBlob = new Blob([
+        "setInterval(function(){ postMessage('tick'); }, 1000);"
+      ], { type: "application/javascript" });
+      const worker = new Worker(URL.createObjectURL(workerBlob));
+      worker.onmessage = function() { tick(); };
+    } catch(e) {}
 
     if (window.lucide) {
       lucide.createIcons();
