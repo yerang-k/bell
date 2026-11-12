@@ -337,6 +337,14 @@
         "melody": "custom:003.수업끝.mp3",
         "duration": 0,
         "enabled": true
+      },
+      {
+        "time": "16:30",
+        "category": "수업 시작",
+        "name": "수업 시작 종 (16:30)",
+        "melody": "custom:002.수업시작.mp3",
+        "duration": 0,
+        "enabled": true
       }
     ],
     "단축수업 (35분 수업 / 10분 휴식 / 6교시)": [
